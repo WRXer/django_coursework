@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_crontab',
+
     'main',
 ]
 
@@ -84,6 +86,9 @@ DATABASES = {
     }
 }
 
+CRONJOBS = [
+    ('*/7 * * * *', 'myapp.tasks.my_task')  # Пример выполнения задачи каждые 7 минут
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -132,3 +137,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
