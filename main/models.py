@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 
 
@@ -8,16 +7,16 @@ class Client(models.Model):
     """
     Клиент сервиса
     """
-    email = models.EmailField()    #контактный email
-    full_name = models.CharField(max_length=255)   #фио
-    comment = models.TextField()    #комментарий
+    email = models.EmailField(verbose_name='емейл')    #контактный email
+    full_name = models.CharField(max_length=255, verbose_name='Полное имя')   #фио
+    comment = models.TextField(verbose_name='Комментарий')    #комментарий
 
     def __str__(self):
         return self.full_name
 
     class Meta:
-        verbose_name = 'client'
-        verbose_name_plural = 'clients'
+        verbose_name = 'Клиент'
+        verbose_name_plural = 'Клиенты'
 
 
 class Mailing(models.Model):
@@ -42,33 +41,19 @@ class Mailing(models.Model):
         ('completed', 'Завершена'),
     )   #статус рассылки (завершена, создана, запущена)
 
-    send_time = models.CharField(max_length=10, choices=TIME_CHOICES)
-    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    clients = models.ManyToManyField(Client)
+    subject = models.CharField(max_length=255, verbose_name='Тема письма')  # тема письма
+    body = models.TextField(verbose_name= "Тело письма")  # тело письма
+    send_time = models.CharField(max_length=10, choices=TIME_CHOICES, verbose_name="Время отправки")
+    frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, verbose_name='Частота отправки')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='Статус')
+    clients = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Рассылка {self.id}"
 
     class Meta:
-        verbose_name = 'mailing'
-        verbose_name_plural = 'mailings'
-
-
-class MailingMessage(models.Model):
-    """
-    Сообщение для рассылки
-    """
-    subject = models.CharField(max_length=255)  #тема письма
-    body = models.TextField()   #тело письма
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, default=1)
-
-    def __str__(self):
-        return self.subject
-
-    class Meta:
-        verbose_name = 'mailing_message'
-        verbose_name_plural = 'mailing_messages'
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
 
 
 class MailingAttempt(models.Model):
@@ -80,13 +65,13 @@ class MailingAttempt(models.Model):
         ('failure', 'Ошибка'),
     )
 
-    send_datetime = models.DateTimeField(default=timezone.now)  #дата и время последней попытки
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)    #статус попытки
-    server_response = models.TextField(blank=True, null=True)   #ответ почтового сервера, если он был
+    send_datetime = models.DateTimeField(default=timezone.now, verbose_name='Последняя попытка')  #дата и время последней попытки
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='Статус попытки')    #статус попытки
+    server_response = models.TextField(blank=True, null=True, verbose_name='Ответ сервера')   #ответ почтового сервера, если он был
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Попытка рассылки {self.id}"
 
     class Meta:
-        verbose_name = 'mailing_attempt'
+        verbose_name = 'Лог рассылки'

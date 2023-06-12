@@ -11,10 +11,17 @@ def index(request):
     return render(request, 'main/index.html')
 
 
+class MailingListView(generic.ListView):
+    model = Mailing
+    extra_context = {
+        'title': 'Все рассылки'
+    }
+
 class MailingCreateView(generic.CreateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'main/create_mailing.html'
+    success_url = '/mailing_list/'
 
 
 class MailingDetailView(generic.DetailView):

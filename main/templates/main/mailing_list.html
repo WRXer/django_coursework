@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'main/base.html' %}
+{% block content %}
 
-</body>
-</html>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Мои рассылки</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <div class="btn-group mr-2">
+                <a href="{% url 'main:create_mailing'%}"> <button class="btn btn-sm btn-outline-secondary">Создать</button></a>
+              </div>
+            </div>
+          </div>
+
+          <h2>Список</h2>
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                      <th>id</th>
+                      <th>тема письма</th>
+                      <th>тело письма</th>
+                      <th>время отправки</th>
+                      <th>клиент</th>
+                        <th>статус</th>
+                    </tr>
+                    </thead>
+                {% for object in object_list %}
+                  <thead>
+                    <tr>
+                      <th>{{object.pk}}</th>
+                      <th>{{ object.subject }}</th>
+                      <th>{{ object.body }}</th>
+                      <th>{{ object.send_time }}</th>
+                      <th>{{ object.clients }}</th>
+                        <th>{{ object.status }}</th>
+                    </tr>
+                  </thead>
+                {% endfor %}
+            </table>
+          </div>
+        </main>
+
+{% endblock %}
