@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -13,6 +14,10 @@ class Client(models.Model):
 
     def __str__(self):
         return self.full_name
+
+    def get_absolute_url(self):
+        return reverse('main:client_detail', kwargs={'pk': self.pk})
+
 
     class Meta:
         verbose_name = 'Клиент'
@@ -50,6 +55,10 @@ class Mailing(models.Model):
 
     def __str__(self):
         return f"Рассылка {self.id}"
+
+    def get_absolute_url(self):
+        return reverse('main:mailing_detail', kwargs={'pk': self.pk})
+
 
     class Meta:
         verbose_name = 'Рассылка'
