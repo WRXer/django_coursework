@@ -1,7 +1,12 @@
-from django.urls import path
+from django.urls import path, include
 from main.apps import MainConfig
 from main.views import index, MailingCreateView, MailingListView, MailingDetailView, ClientListView, ClientDetailView, \
-    ClientCreateView, ClientUpdateView, MailingUpdateView, ClientDeleteView, MailingDeleteView
+    ClientCreateView, ClientUpdateView, MailingUpdateView, ClientDeleteView, MailingDeleteView, \
+    status_sending
+from main.tasks import send_mailing_task
+
+
+from django_crontab import urls as crontab_urls
 
 app_name = MainConfig.name
 urlpatterns = [
@@ -16,4 +21,7 @@ urlpatterns = [
     path('mailing_detail/<int:pk>/', MailingDetailView.as_view(), name='mailing_detail'),
     path('mailing_update/<int:pk>/', MailingUpdateView.as_view(), name='mailing_update'),
     path('mailing_delete/<int:pk>/', MailingDeleteView.as_view(), name='mailing_delete'),
+    path('status_sending/<int:pk>/', status_sending, name='status_sending'),
+    path('send_mailing/', send_mailing_task, name='send_emails'),
+    path('crontab/', include(crontab_urls)),
 ]

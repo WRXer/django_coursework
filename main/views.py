@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from .forms import MailingForm, ClientForm
 from main.models import Mailing, Client
+from .tasks import send_mailing_task
 
 
 # Create your views here.
@@ -64,6 +65,11 @@ class MailingCreateView(generic.CreateView):
     template_name = 'main/create_mailing.html'
     success_url = '/mailing_list/'
 
+    #def form_valid(self, form):
+    #   obj = form.save()
+    #    send_mailing_task(obj)
+    #    return super().form_valid(form)
+
 
 class MailingDetailView(generic.DetailView):
     model = Mailing
@@ -87,3 +93,9 @@ class MailingUpdateView(generic.UpdateView):
 class MailingDeleteView(generic.DeleteView):
     model = Mailing  # Модель
     success_url = reverse_lazy('main:mailing_list')  # Адрес для перенаправления после успешного удаления
+
+
+def status_sending(request, pk):
+    mailing = Mailing.objects.get(pk=pk)
+    mailing.status_sending()  # Изменить статус на "Запущена"
+    return redirect('main:mailing_list')

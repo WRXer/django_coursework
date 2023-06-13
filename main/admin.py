@@ -10,7 +10,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'body', 'send_time', 'frequency', 'status', 'get_clients_display' )
+    list_display = ('subject', 'body', 'send_time', 'frequency', 'get_clients_display', 'status' )
 
     def get_clients_display(self, obj):
         return "\n".join([str(client) for client in obj.clients.all()])

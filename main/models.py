@@ -20,6 +20,7 @@ class Client(models.Model):
 
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
 
@@ -50,18 +51,26 @@ class Mailing(models.Model):
     body = models.TextField(verbose_name= "Тело письма")  # тело письма
     send_time = models.CharField(max_length=10, choices=TIME_CHOICES, verbose_name="Время отправки")
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, verbose_name='Частота отправки')
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='Статус')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='created', verbose_name='Статус')
     clients = models.ManyToManyField(Client)
 
     def __str__(self):
         return f"Рассылка {self.id}"
 
+    def status_sending(self):
+        if self.status == 'created' or self.status == 'completed':
+            self.status = 'running'
+            self.save()
+        elif self.status == 'running':
+            self.status = 'completed'
+            self.save()
 
     def get_absolute_url(self):
         return reverse('main:mailing_detail', kwargs={'pk': self.pk})
 
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
 
@@ -85,3 +94,4 @@ class MailingAttempt(models.Model):
 
     class Meta:
         verbose_name = 'Лог рассылки'
+        verbose_name_plural = 'Лог рассылки'

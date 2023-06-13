@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_crontab',
-
     'main',
 ]
 
@@ -87,7 +86,12 @@ DATABASES = {
 }
 
 CRONJOBS = [
-    ('*/7 * * * *', 'myapp.tasks.my_task')  # Пример выполнения задачи каждые 7 минут
+    ('0 9 * * *', 'python/manage.py/send_mailing_task'),
+
+]
+
+CRON_CLASSES = [
+    'main.tasks.MyCronJob',
 ]
 
 # Password validation
@@ -138,3 +142,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Настройки SMTP-сервера
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "king_311@mail.ru"
+EMAIL_HOST_PASSWORD = 'hTFRgudE2tEBmKEgwjFS'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
