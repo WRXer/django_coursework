@@ -56,6 +56,7 @@ class Mailing(models.Model):
     def __str__(self):
         return f"Рассылка {self.id}"
 
+
     def get_absolute_url(self):
         return reverse('main:mailing_detail', kwargs={'pk': self.pk})
 
