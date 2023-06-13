@@ -51,7 +51,7 @@ class Mailing(models.Model):
     send_time = models.CharField(max_length=10, choices=TIME_CHOICES, verbose_name="Время отправки")
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, verbose_name='Частота отправки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='Статус')
-    clients = models.ForeignKey(Client, on_delete=models.CASCADE)
+    clients = models.ManyToManyField(Client)
 
     def __str__(self):
         return f"Рассылка {self.id}"
