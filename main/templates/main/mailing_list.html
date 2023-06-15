@@ -6,7 +6,11 @@
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
             <a href="{% url 'main:create_mailing'%}"> <button class="btn btn-warning">Создать</button></a>
-
+            <form method="post" action="{% url 'main:mailing_list' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-dark" name="start_mailing">Активировать</button>
+                        <button class="btn btn-danger" name="stop_mailing">Деактивировать</button>
+                        </form>
           </div>
         </div>
       </div>
@@ -19,9 +23,9 @@
                   <th>id</th>
                   <th>тема письма</th>
                   <th>время отправки</th>
+                    <th>частота отправки</th>
                   <th>клиент</th>
                     <th>статус</th>
-                    <th>действия</th>
                 </tr>
                 </thead>
             {% for object in object_list %}
@@ -30,6 +34,7 @@
                     <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{object.pk}}</a></th>
                     <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{ object.subject }}</a></th>
                   <th>{{ object.send_time }}</th>
+                    <th>{{ object.frequency }}</th>
                     <th>
                       {% if object.clients.exists %}
                         {% for client in object.clients.all %}
@@ -40,14 +45,7 @@
                       {% endif %}
                     </th>
                     <th>{{ object.status }}</th>
-                    <th>
-                        <form method="post" action="{% url 'main:mailing_list' %}">
-                        {% csrf_token %}
-                        <button class="btn btn-dark" name="start_mailing">Активировать/Деак...</button>
-                        </form>
-                    </th>
                 </tr>
-
               </thead>
             {% endfor %}
         </table>

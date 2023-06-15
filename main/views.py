@@ -1,4 +1,5 @@
 import datetime
+import threading
 import time
 
 import schedule
@@ -8,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from .forms import MailingForm, ClientForm
 from main.models import Mailing, Client
-from .tasks import send_mailing_task
+from .tasks import send_mailing_task, start_scheduler
 
 
 # Create your views here.
@@ -70,43 +71,16 @@ class MailingListView(generic.ListView):
         return context
 
     def post(self, request, *args, **kwargs):
-        mailing_list = Mailing.objects.all()  #Если только одна рассылка
-        for mailing in mailing_list:
-            if 'start_mailing' in request.POST:
-                if mailing.status != 'running':
-                    mailing.status = 'running'
-                    mailing.save()
-                    # Проверка выбранного периода рассылки
-                    if mailing.frequency == 'daily':    # Планирование рассылки раз в день
-                        self.schedule_mailing(mailing)
-                        schedule.every().seconds.do(lambda: self.schedule_mailing(mailing))
-                    elif mailing.frequency == 'weekly':     # Планирование рассылки раз в неделю (в указанный день и время)
-                        self.schedule_mailing(mailing)
-                        schedule.every().seconds.do(lambda: self.schedule_mailing(mailing))
-                    elif mailing.frequency == 'monthly':    # Планирование рассылки раз в месяц (в указанный день и время)
-                        self.schedule_mailing(mailing)
-                        schedule.every().day.at(mailing.start_time).do(lambda: self.schedule_mailing(mailing))
-
-                    #schedule.every().seconds.do(lambda: self.schedule_mailing(mailing))
-                    while True:    # Запуск цикла для непрерывного выполнения задач
-                        schedule.run_pending()
-                        time.sleep(5)
-                elif mailing.status == 'running':
-                    mailing.status = 'completed'
-                    mailing.save()
-                    schedule.clear()
-                    print("Рассылка остановлена")
-            return self.get(request, *args, **kwargs)
-
-    def schedule_mailing(self, mailing):
         """
-        Шедьюл отправка рассылки
+        Функция для активации/деактивации шедьюлера
         """
-        current_time = datetime.datetime.now()
-        if self.last_sent_time is None or (current_time - self.last_sent_time).total_seconds() >= 10:  # Проверяем, прошло ли подходящее время
-            send_mailing_task()
-            self.last_sent_time = current_time
-            print("Рассылка отправлена")
+        if 'start_mailing' in request.POST:
+            threading.Thread(target=start_scheduler()).start()   # Запуск шедьюлера в отдельном потоке
+            print('Рассылки запущены')
+        elif 'stop_mailing' in request.POST:
+            schedule.clear()
+            print('Рассылки остановлены')
+        return self.get(request, *args, **kwargs)
 
 
 class MailingCreateView(generic.CreateView):
