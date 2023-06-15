@@ -57,14 +57,6 @@ class Mailing(models.Model):
     def __str__(self):
         return f"Рассылка {self.id}"
 
-    def status_sending(self):
-        if self.status == 'created' or self.status == 'completed':
-            self.status = 'running'
-            self.save()
-        elif self.status == 'running':
-            self.status = 'completed'
-            self.save()
-
     def get_absolute_url(self):
         return reverse('main:mailing_detail', kwargs={'pk': self.pk})
 
@@ -73,6 +65,8 @@ class Mailing(models.Model):
         ordering = ['id']
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+
+
 
 
 class MailingAttempt(models.Model):

@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_crontab',
     'main',
 ]
 
@@ -85,14 +84,6 @@ DATABASES = {
     }
 }
 
-CRONJOBS = [
-    ('0 9 * * *', 'python/manage.py/send_mailing_task'),
-
-]
-
-CRON_CLASSES = [
-    'main.tasks.MyCronJob',
-]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

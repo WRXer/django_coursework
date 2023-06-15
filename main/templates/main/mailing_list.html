@@ -41,11 +41,10 @@
                     </th>
                     <th>{{ object.status }}</th>
                     <th>
-                        <form method="post" action="{% url 'main:status_sending' object.pk %}">
+                        <form method="post" action="{% url 'main:mailing_list' %}">
                         {% csrf_token %}
-                        <button class="btn btn-dark">Активировать/Деак...</button>
-                      </form>
-
+                        <button class="btn btn-dark" name="start_mailing">Активировать/Деак...</button>
+                        </form>
                     </th>
                 </tr>
 
