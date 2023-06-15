@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from main.models import Mailing, MailingAttempt
@@ -45,19 +46,20 @@ def check_mailings():
     mailings = Mailing.objects.all()  # Получаем все рассылки
     for mailing in mailings:
         if mailing.status == 'running':
-            schedule_mailing(mailing)
+            schedule_mailing()
 
-def schedule_mailing(mailing):
+def schedule_mailing():
     """
     Шедьюл отправка рассылки
     """
     current_time = timezone.now()
-    mailing = Mailing.objects.first()  # Получаем рассылку
-    mailing_attempt = MailingAttempt.objects.filter(mailing__status='running', is_active=True).first()
 
-    if mailing_attempt and (current_time - mailing_attempt.send_datetime).total_seconds() >= 20:    # Проверяем, прошло ли подходящее время
-        mailing_attempt.is_active = False  # Установка is_active предыдущей активной строки в False
-        mailing_attempt.save()
-        mailing_attempt = MailingAttempt.objects.create(mailing=mailing,send_datetime=timezone.now(),status='success',server_response='OK', is_active=True)
-        mailing_attempt.save()
-        send_mailing_task()
+    mailing_attempt_l = MailingAttempt.objects.filter(mailing__status='running', is_active=True)
+    for mailing_attempt in mailing_attempt_l:
+        print(mailing_attempt)
+        if mailing_attempt and (current_time - mailing_attempt.send_datetime).total_seconds() >= 20:    # Проверяем, прошло ли подходящее время
+            mailing_attempt.is_active = False  # Установка is_active предыдущей активной строки в False
+            mailing_attempt.save()
+            mailing_attempt = MailingAttempt.objects.create(mailing=mailing_attempt.mailing,send_datetime=timezone.now(),status='success',server_response='OK', is_active=True)
+            mailing_attempt.save()
+            send_mailing_task()
