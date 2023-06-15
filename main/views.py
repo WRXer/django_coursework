@@ -3,12 +3,14 @@ import threading
 import time
 
 import schedule
+from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import generic
-from .forms import MailingForm, ClientForm
-from main.models import Mailing, Client
+from .forms import MailingForm, ClientForm, MailingAttemptForm
+from main.models import Mailing, Client, MailingAttempt
 from .tasks import send_mailing_task, start_scheduler
 
 
@@ -63,11 +65,14 @@ class MailingListView(generic.ListView):
     extra_context = {
         'title': 'Все рассылки'
     }
-    last_sent_time = None
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['newsletter'] = Mailing.objects.all()  # Если только одна рассылка
+        MailingAttemptFormset = inlineformset_factory(Mailing, MailingAttempt, form=MailingAttemptForm, extra=1)
+        formset = MailingAttemptFormset
+        context['mailing'] = Mailing.objects.all()  # Если только одна рассылка
+        context['formset'] = formset  # Добавляем форму в контекст
         return context
 
     def post(self, request, *args, **kwargs):
@@ -88,6 +93,15 @@ class MailingCreateView(generic.CreateView):
     form_class = MailingForm
     template_name = 'main/create_mailing.html'
     success_url = '/mailing_list/'
+
+    def form_valid(self, form):
+        # Создание экземпляра Mailing
+        mailing = form.save()
+        # Создание первой MailingAttempt
+        send_datetime = timezone.now()
+        mailing_attempt = MailingAttempt.objects.create(mailing=mailing, send_datetime=send_datetime, status='failure',server_response='create')
+        mailing_attempt.save()
+        return super().form_valid(form)
 
     #def form_valid(self, form):
     #Отправка на электронку при создании новой рассылки

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Mailing, Client
+from .models import Mailing, Client, MailingAttempt
 
 
 class MailingForm(forms.ModelForm):
@@ -16,3 +16,7 @@ class ClientForm(forms.ModelForm):
         fields = ['full_name', 'email', 'comment']
 
 
+class MailingAttemptForm(forms.ModelForm):
+    class Meta:
+        model=MailingAttempt
+        fields = '__all__'

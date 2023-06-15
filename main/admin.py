@@ -20,7 +20,7 @@ class MailingAdmin(admin.ModelAdmin):
 
 @admin.register(MailingAttempt)
 class MailingAttemptAdmin(admin.ModelAdmin):
-    list_display = ('send_datetime', 'server_response', 'status', 'get_mailing_subject', )
+    list_display = ('send_datetime', 'server_response', 'status', 'get_mailing_subject', 'is_active')
 
     def get_mailing_subject(self, obj):
         return obj.mailing.subject if obj.mailing else None

@@ -67,8 +67,6 @@ class Mailing(models.Model):
         verbose_name_plural = 'Рассылки'
 
 
-
-
 class MailingAttempt(models.Model):
     """
     Логи рассылки
@@ -82,6 +80,7 @@ class MailingAttempt(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, verbose_name='Статус попытки')    #статус попытки
     server_response = models.TextField(blank=True, null=True, verbose_name='Ответ сервера')   #ответ почтового сервера, если он был
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True, verbose_name='Активная')
 
     def __str__(self):
         return f"Попытка рассылки {self.id}"

@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from main.models import Mailing
+from django.utils import timezone
+
+from main.models import Mailing, MailingAttempt
 import datetime
 import threading
 import time
@@ -40,20 +42,22 @@ def check_mailings():
     """
     Проверка статуса рассылки
     """
-    last_sent_time = None
     mailings = Mailing.objects.all()  # Получаем все рассылки
     for mailing in mailings:
         if mailing.status == 'running':
-            schedule_mailing(mailing, last_sent_time)
+            schedule_mailing(mailing)
 
-def schedule_mailing(mailing, last_sent_time):
+def schedule_mailing(mailing):
     """
     Шедьюл отправка рассылки
     """
-    current_time = datetime.datetime.now()
-    if last_sent_time is None or (current_time - last_sent_time).total_seconds() >= 10:  # Проверяем, прошло ли подходящее время
+    current_time = timezone.now()
+    mailing = Mailing.objects.first()  # Получаем рассылку
+    mailing_attempt = MailingAttempt.objects.filter(mailing__status='running', is_active=True).first()
+
+    if mailing_attempt and (current_time - mailing_attempt.send_datetime).total_seconds() >= 20:    # Проверяем, прошло ли подходящее время
+        mailing_attempt.is_active = False  # Установка is_active предыдущей активной строки в False
+        mailing_attempt.save()
+        mailing_attempt = MailingAttempt.objects.create(mailing=mailing,send_datetime=timezone.now(),status='success',server_response='OK', is_active=True)
+        mailing_attempt.save()
         send_mailing_task()
-        last_sent_time = current_time
-        print("Рассылка отправлена")
-
-
