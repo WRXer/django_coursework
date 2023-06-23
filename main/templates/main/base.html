@@ -21,12 +21,15 @@
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Mailing Corp</a>
-      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-      <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">Выйти</a>
-        </li>
-      </ul>
+      <ul class="navbar-nav ml-auto">
+      {% if user.is_authenticated  %}
+        <li class="nav-item text-nowrap"><a href="{% url 'users:profile' %}" class="text-white">Профиль</a></li>
+        <li class="nav-item text-nowrap"><a href="{% url 'users:logout' %}" class="text-white">Выйти</a></li>
+      {% else %}
+        <li class="nav-item text-nowrap"><a href="{% url 'users:login' %}" class="text-white">Войти</a></li>
+        <li class="nav-item text-nowrap"><a href="{% url 'users:register' %}" class="text-white">Регистрация</a></li>
+      {% endif %}
+
     </nav>
         {% include 'main/includes/inc_main_menu.html' %}
 

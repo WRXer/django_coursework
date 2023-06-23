@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 
+NULLABLE = {'blank': True, 'null': True}
+
 # Create your models here.
 class Client(models.Model):
     """
