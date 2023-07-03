@@ -1,16 +1,12 @@
-from django.shortcuts import render
 from django.views import generic
 
+from blog.forms import BlogForm
 from blog.models import BlogPost
 
 
 # Create your views here.
-class BlogsListView(generic.ListView):
+class BlogListView(generic.ListView):
     model = BlogPost
-    extra_context = {
-        'title': 'Блог'
-    }
-
 
     def get_queryset(self):
         """
@@ -19,18 +15,24 @@ class BlogsListView(generic.ListView):
         return BlogPost.objects.filter(is_published=True)
 
 
-class BlogsDetailView(generic.DetailView):
+class BlogDetailView(generic.DetailView):
     model = BlogPost
+    form_class = BlogForm
+    template_name = 'blog/blog_detail.html'
 
-    context_object_name = 'blog'
+
 
     def get(self, request, *args, **kwargs):
         """
         Увеличиваем счетчик просмотров
         """
         self.object = self.get_object()
-        self.object.blog_views += 1
+        self.object.views += 1
         self.object.save()
 
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        return context_data

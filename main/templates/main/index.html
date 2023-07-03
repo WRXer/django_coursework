@@ -7,9 +7,9 @@
   </div>
     {% if posts %}
         {% for post in posts %}
-        <h2>{{ post.title }}</h2>
+            <h2><a href="{% url 'blog:blog_detail' pk=post.pk%}">{{ post.title }}</a></h2>
             <img src="{{ post.image.url }}" alt="{{ post.title }}" width="800" height="600">
-        <p> {{ post.content|slice:":100" }}{% if post.content|length > 100 %}...{% endif %}</p>
+            <p> {{ post.content|slice:":100" }}{% if post.content|length > 100 %}...{% endif %}</p>
             {{ post.pub_date }}<br>
             Количество просмотров: {{ post.views }}
                 <hr class="post-divider">
