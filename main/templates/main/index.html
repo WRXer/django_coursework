@@ -5,6 +5,16 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     <h1 class="h2">Вы находитесь на сайте/сервисе для емэйл-рассылок</h1>
   </div>
+    {% if posts %}
+        {% for post in posts %}
+        <h2>{{ post.title }}</h2>
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" width="800" height="600">
+        <p> {{ post.content|slice:":100" }}{% if post.content|length > 100 %}...{% endif %}</p>
+            {{ post.pub_date }}<br>
+            Количество просмотров: {{ post.views }}
+                <hr class="post-divider">
+        {% endfor %}
 
+    {% endif %}
 </main>
 {% endblock %}

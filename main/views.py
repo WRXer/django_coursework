@@ -1,6 +1,7 @@
 import datetime
 import threading
 import time
+from random import sample
 
 import schedule
 from django.forms import inlineformset_factory
@@ -9,6 +10,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
+
+from blog.models import BlogPost
 from .forms import MailingForm, ClientForm, MailingAttemptForm
 from main.models import Mailing, Client, MailingAttempt
 from .tasks import send_mailing_task, start_scheduler
@@ -16,7 +19,16 @@ from .tasks import send_mailing_task, start_scheduler
 
 # Create your views here.
 def index(request):
-    return render(request, 'main/index.html')
+    all_posts = BlogPost.objects.filter(is_active=True)    # Получить все блог-посты
+    if len(all_posts) >= 3:
+        random_posts = sample(list(all_posts), 3)   # Получить 3 случайных блог-поста
+    elif len(all_posts) == 0:
+        random_posts = None
+    else:
+        random_posts = sample(list(all_posts), 1)
+    context = {'posts': random_posts}    # Передать блог-посты в контекст шаблона
+
+    return render(request, 'main/index.html', context)
 
 
 class ClientListView(generic.ListView):
