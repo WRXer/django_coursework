@@ -96,10 +96,13 @@ class MailingCreateView(generic.CreateView):
 
     def form_valid(self, form):
         # Создание экземпляра Mailing
-        mailing = form.save()
+        self.mailing = form.save()
+        self.mailing.mailing_owner = self.request.user
+        form.instance.mailing_owner = self.request.user
+        self.mailing.save()
         # Создание первой MailingAttempt
         send_datetime = timezone.now()
-        mailing_attempt = MailingAttempt.objects.create(mailing=mailing, send_datetime=send_datetime, status='failure',server_response='create')
+        mailing_attempt = MailingAttempt.objects.create(mailing=self.mailing, send_datetime=send_datetime, status='failure',server_response='create')
         mailing_attempt.save()
         return super().form_valid(form)
 

@@ -3,6 +3,7 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Мои рассылки</h1>
+          {% if user.is_authenticated and not request.user.is_staff or user.is_superuser %}
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
             <a href="{% url 'main:create_mailing'%}"> <button class="btn btn-warning">Создать</button></a>
@@ -13,6 +14,7 @@
                         </form>
           </div>
         </div>
+          {% endif %}
       </div>
 
       <h2>Список</h2>
@@ -30,6 +32,7 @@
                 </thead>
             {% for object in object_list %}
               <thead>
+              {% if object.mailing_owner == request.user or request.user.is_staff or request.user.is_superuser %}
                 <tr>
                     <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{object.pk}}</a></th>
                     <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{ object.subject }}</a></th>
@@ -46,10 +49,12 @@
                     </th>
                     <th>{{ object.status }}</th>
                 </tr>
+              {% endif %}
               </thead>
             {% endfor %}
         </table>
       </div>
+
     </main>
 
 {% endblock %}

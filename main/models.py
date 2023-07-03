@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -54,6 +55,7 @@ class Mailing(models.Model):
     send_time = models.CharField(max_length=10, choices=TIME_CHOICES, verbose_name="Время отправки")
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, verbose_name='Частота отправки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='created', verbose_name='Статус')
+    mailing_owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
     clients = models.ManyToManyField(Client)
 
     def __str__(self):
