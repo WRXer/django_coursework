@@ -7,11 +7,13 @@
               <div class="table-responsive">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
+                    {% if object.client_owner == request.user and not request.user.is_staff or request.user.is_superuser %}
                     {{ form.as_p }}
                     <input type="submit" class="btn btn-warning" value="Создать">
+                    {% endif %}
                     <a href="{%url 'main:client_list' %}" class="btn btn-info">Назад</a>
                 </form>
               </div>
-
+          </div>
     </main>
 {% endblock %}

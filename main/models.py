@@ -14,6 +14,7 @@ class Client(models.Model):
     email = models.EmailField(verbose_name='емейл')    #контактный email
     full_name = models.CharField(max_length=255, verbose_name='Полное имя')   #фио
     comment = models.TextField(verbose_name='Комментарий')    #комментарий
+    client_owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.full_name

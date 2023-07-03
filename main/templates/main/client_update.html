@@ -1,6 +1,7 @@
 {% extends 'main/base.html' %}
 {% block content %}
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+    {% if object.client_owner == request.user and not request.user.is_staff or request.user.is_superuser %}
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 
           <h2>Добавление клиента</h2>
@@ -12,6 +13,7 @@
                     <a href="{%url 'main:client_list' %}" class="btn btn-info">Назад</a>
                 </form>
               </div>
-
+          </div>
+    {% endif %}
     </main>
 {% endblock %}

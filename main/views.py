@@ -32,6 +32,13 @@ class ClientCreateView(generic.CreateView):
     template_name = 'main/create_client.html'
     success_url = '/client_list/'
 
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.client_owner = self.request.user
+        form.instance.client_owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
 
 class ClientUpdateView(generic.UpdateView):
     model = Client

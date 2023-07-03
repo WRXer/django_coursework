@@ -13,7 +13,7 @@
               <div class="table-responsive">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {% if not request.user.is_staff or user.is_superuser %}
+                    {% if user.is_active or not request.user.is_staff or user.is_superuser %}
                     <div class="form-row" >
                         Тема </div>
                     <div class="form-row">{{ form.subject }}<br></div>
@@ -28,15 +28,15 @@
                     <div class="form-row">
                         Клиенты {{ form.clients }}<br></div>
                         {% endif %}
-
+                    {% if user.is_active or not request.user.is_staff or user.is_superuser %}
                     <div class="form-row">
                         Статус рассылки {{ form.status }}<br></div>
-
+                    {% endif %}
                     <input type="submit" class="btn btn-warning" value="Создать">
                     <a href="{%url 'main:mailing_list' %}" class="btn btn-info">Назад</a>
                 </form>
               </div>
-
+          </div>
     </main>
 
 {% endblock %}

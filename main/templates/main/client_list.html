@@ -5,7 +5,9 @@
         <h1 class="h2">Мои клиенты</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
+              {% if user.is_authenticated and not request.user.is_staff or user.is_superuser %}
             <a href="{% url 'main:create_client'%}"> <button class="btn btn-warning">Создать</button></a>
+              {% endif %}
           </div>
         </div>
       </div>
@@ -22,6 +24,7 @@
                 </tr>
                 </thead>
             {% for object in object_list %}
+                {% if object.client_owner == request.user or request.user.is_staff or request.user.is_superuser %}
               <thead>
                 <tr>
                     <th><a href="{% url 'main:client_detail' pk=object.pk %}">{{object.pk}}</a></th>
@@ -30,6 +33,7 @@
                   <th>{{ object.comment }}</th>
                 </tr>
               </thead>
+                {% endif %}
             {% endfor %}
         </table>
       </div>
