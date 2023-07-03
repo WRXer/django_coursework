@@ -2,6 +2,8 @@ from django.views import generic
 
 from blog.forms import BlogForm
 from blog.models import BlogPost
+from django.http import JsonResponse
+from blog.models import BlogPost
 
 
 # Create your views here.
@@ -36,3 +38,13 @@ class BlogDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         return context_data
+
+
+def increase_views(request, post_id):
+    try:
+        blog_post = BlogPost.objects.get(pk=post_id)
+        blog_post.views += 1
+        blog_post.save()
+        return JsonResponse({'status': 'success', 'views': blog_post.views})
+    except BlogPost.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Blog post not found'}, status=404)
