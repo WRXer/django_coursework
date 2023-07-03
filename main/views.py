@@ -19,6 +19,11 @@ from .tasks import send_mailing_task, start_scheduler
 
 # Create your views here.
 def index(request):
+    total_mailings = Mailing.objects.count()
+    active_mailings = Mailing.objects.filter(status='running').count()
+    unique_clients = Client.objects.distinct().count()
+
+
     all_posts = BlogPost.objects.filter(is_active=True)    # Получить все блог-посты
     if len(all_posts) >= 3:
         random_posts = sample(list(all_posts), 3)   # Получить 3 случайных блог-поста
@@ -26,7 +31,11 @@ def index(request):
         random_posts = None
     else:
         random_posts = sample(list(all_posts), 1)
-    context = {'posts': random_posts}    # Передать блог-посты в контекст шаблона
+
+    context = {'total_mailings': total_mailings,
+        'active_mailings': active_mailings,
+        'unique_clients': unique_clients,
+        'posts': random_posts}    # Передать блог-посты в контекст шаблона
 
     return render(request, 'main/index.html', context)
 
