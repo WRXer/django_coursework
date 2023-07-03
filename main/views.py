@@ -25,6 +25,8 @@ class ClientListView(generic.ListView):
         'title': 'Все клиенты'
     }
 
+    def get_queryset(self):
+        return super().get_queryset().filter(client_owner=self.request.user)
 
 class ClientCreateView(generic.CreateView):
     model = Client
@@ -103,16 +105,30 @@ class MailingCreateView(generic.CreateView):
 
     def form_valid(self, form):
         # Создание экземпляра Mailing
-        self.mailing = form.save()
-        self.mailing.mailing_owner = self.request.user
+        self.object = form.save()
+        self.object.mailing_owner = self.request.user
         form.instance.mailing_owner = self.request.user
-        self.mailing.save()
+        self.object.save()
+        formset = self.get_form()
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
         # Создание первой MailingAttempt
         send_datetime = timezone.now()
-        mailing_attempt = MailingAttempt.objects.create(mailing=self.mailing, send_datetime=send_datetime, status='failure',server_response='create')
+        mailing_attempt = MailingAttempt.objects.create(mailing=self.object, send_datetime=send_datetime, status='failure',server_response='create')
         mailing_attempt.save()
         return super().form_valid(form)
 
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['clients'].queryset = Client.objects.filter(client_owner=self.request.user)
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = self.get_form()
+        return context
     #def form_valid(self, form):
     #Отправка на электронку при создании новой рассылки
     #   obj = form.save()

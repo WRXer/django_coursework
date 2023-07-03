@@ -6,7 +6,7 @@ from main.models import Mailing, Client, MailingAttempt
 # Register your models here.
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'email', 'comment',)
+    list_display = ('full_name', 'email', 'comment', 'client_owner')
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
