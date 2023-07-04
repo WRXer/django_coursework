@@ -4,6 +4,7 @@ import time
 from random import sample
 
 import schedule
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -40,7 +41,7 @@ def index(request):
     return render(request, 'main/index.html', context)
 
 
-class ClientListView(generic.ListView):
+class ClientListView(LoginRequiredMixin, generic.ListView):
     model = Client
     extra_context = {
         'title': 'Все клиенты'
@@ -89,7 +90,7 @@ class ClientDeleteView(generic.DeleteView):
     success_url = reverse_lazy('main:client_list')    #Адрес для перенаправления после успешного удаления
 
 
-class MailingListView(generic.ListView):
+class MailingListView(LoginRequiredMixin, generic.ListView):
     model = Mailing
     template_name = 'main/mailing_list.html'
     extra_context = {

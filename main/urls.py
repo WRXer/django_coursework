@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.views.decorators.cache import cache_page
+
 from main.apps import MainConfig
 from main.views import index, MailingCreateView, MailingListView, MailingDetailView, ClientListView, ClientDetailView, \
     ClientCreateView, ClientUpdateView, MailingUpdateView, ClientDeleteView, MailingDeleteView
@@ -7,7 +9,7 @@ from main.tasks import send_mailing_task
 
 app_name = MainConfig.name
 urlpatterns = [
-    path('', index, name='index'),
+    path('', cache_page(60)(index), name='index'),
     path('create_client/', ClientCreateView.as_view(), name='create_client'),
     path('client_list/', ClientListView.as_view(), name='client_list'),
     path('client_detail/<int:pk>/', ClientDetailView.as_view(), name='client_detail'),
