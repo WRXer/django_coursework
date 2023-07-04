@@ -23,6 +23,7 @@
                   <th>id</th>
                   <th>тема письма</th>
                   <th>тело письма</th>
+                    <th>дата отправки</th>
                   <th>время отправки</th>
                   <th>клиент</th>
                     <th>статус</th>
@@ -33,6 +34,7 @@
                     <th>{{object.pk}}</th>
                     <th>{{ object.subject }}</th>
                   <th>{{ object.body }}</th>
+                <th>{{ object.send_date }}</th>
                   <th>{{ object.send_time }}</th>
                   <th>{% if object.clients.exists %}
                         {% for client in object.clients.all %}

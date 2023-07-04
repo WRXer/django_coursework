@@ -53,6 +53,7 @@ class Mailing(models.Model):
 
     subject = models.CharField(max_length=255, verbose_name='Тема письма')  # тема письма
     body = models.TextField(verbose_name= "Тело письма")  # тело письма
+    send_date = models.DateField(verbose_name="Дата отправки", default=timezone.now)
     send_time = models.CharField(max_length=10, choices=TIME_CHOICES, verbose_name="Время отправки")
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, verbose_name='Частота отправки')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='created', verbose_name='Статус')
