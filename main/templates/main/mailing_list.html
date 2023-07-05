@@ -1,0 +1,62 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Мои рассылки</h1>
+          {% if user.is_authenticated and not request.user.is_staff or user.is_superuser %}
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group mr-2">
+            <a href="{% url 'main:create_mailing'%}"> <button class="btn btn-warning">Создать</button></a><br>
+              {% if user.is_superuser %}
+            <form method="post" action="{% url 'main:mailing_list' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-dark" name="start_mailing">Активировать scheduler</button>
+                        <button class="btn btn-danger" name="stop_mailing">Деактивировать</button>
+                        </form>
+                  {% endif %}
+          </div>
+        </div>
+          {% endif %}
+      </div>
+
+      <h2>Список</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+                <thead>
+                <tr>
+                  <th>id</th>
+                  <th>тема письма</th>
+                  <th>время отправки</th>
+                    <th>частота отправки</th>
+                  <th>клиент</th>
+                    <th>статус</th>
+                </tr>
+                </thead>
+            {% for object in object_list %}
+                {% if object.mailing_owner == request.user or request.user.is_staff or request.user.is_superuser %}
+                <thead>
+                    <tr>
+                        <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{object.pk}}</a></th>
+                        <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{ object.subject }}</a></th>
+                      <th>{{ object.send_time }}</th>
+                        <th>{{ object.frequency }}</th>
+                        <th>
+                          {% if object.clients.exists %}
+                            {% for client in object.clients.all %}
+                              {{ client }}<br>
+                            {% endfor %}
+                          {% else %}
+                            No clients assigned
+                          {% endif %}
+                        </th>
+                        <th>{{ object.status }}</th>
+                    </tr>
+                </thead>
+                {% endif %}
+            {% endfor %}
+        </table>
+      </div>
+
+    </main>
+
+{% endblock %}

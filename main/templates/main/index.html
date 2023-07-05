@@ -1,0 +1,72 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var expandButtons = document.querySelectorAll('.expand-button');
+
+    expandButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        var postId = this.getAttribute('data-post-id');
+        var fullTextElement = this.parentNode.querySelector('.full-text');
+        var viewsElement = this.parentNode.querySelector('.views-count');
+
+        fetch(`blog/blog_detail/${postId}/`)
+          .then(function(response) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok.');
+            }
+          })
+          .then(function(data) {
+            fullTextElement.style.display = 'block';
+            button.textContent = 'Скрыть';
+            viewsElement.textContent = data.views;
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+          });
+      });
+    });
+  });
+</script>
+
+
+
+<script>
+function expandText(button) {
+var fullTextElement = button.parentNode.querySelector('.full-text');
+var buttonText = button.textContent;
+
+if (fullTextElement.style.display === 'none') {
+  fullTextElement.style.display = 'block';
+  button.textContent = 'Скрыть';
+} else {
+  fullTextElement.style.display = 'none';
+  button.textContent = 'Раскрыть';
+}
+}
+</script>
+
+
+
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Вы находитесь на сайте/сервисе для емэйл-рассылок</h1>
+  </div>
+
+  {% if posts %}
+    {% for post in posts %}
+      <h2>{{ post.title }}</h2>
+      <img src="{{ post.image.url }}" alt="{{ post.title }}" width="800" height="600">
+      <div class="short-text">
+        <button class="btn btn-success expand-button" data-post-id="{{ post.pk }}" onclick="expandText(this)">Прочесть статью</button>
+        <p class="full-text" style="display: none;">{{ post.content }}</p>
+      </div>
+      {{ post.pub_date }}<br>
+      Количество просмотров: <span class="views-count">{{ post.views }}</span>
+      <hr class="post-divider">
+    {% endfor %}
+  {% endif %}
+</main>
+{% endblock %}

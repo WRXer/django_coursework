@@ -1,0 +1,41 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Состояние рассылок</h1>
+      </div>
+{% if user.is_active and not request.user.is_staff or user.is_superuser %}
+      <h2>Список</h2>
+      <div class="table-responsive">
+        <table class="table table-striped table-sm">
+                <thead>
+                <tr>
+                  <th>id</th>
+                  <th>тема рассылки</th>
+                  <th>последняя попытка</th>
+                    <th>статус попытки</th>
+                    <th>ответ сервера</th>
+
+                </tr>
+                </thead>
+            {% for object in object_list %}
+                {% if object.mailing.mailing_owner == request.user or request.user.is_staff or request.user.is_superuser %}
+              <thead>
+                <tr>
+                    <th>{{ object.pk }}</th>
+                  <th>{{ object.mailing.subject }}</th>
+                    <th>{{ object.send_datetime }}</th>
+
+                    <th>{{ object.status }}</th>
+                    <th>{{ object.server_response }}</th>
+                </tr>
+              </thead>
+                {% endif %}
+            {% endfor %}
+        </table>
+      </div>
+    {% else %} <h1>У вас нет прав доступа</h1>
+{% endif %}
+    </main>
+
+{% endblock %}

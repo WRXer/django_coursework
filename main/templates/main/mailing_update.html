@@ -1,0 +1,44 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <style>
+        .form-row {
+            margin-left: 5px;
+            margin-bottom: 10px;  /* Измените значение здесь для увеличения интервала */
+        }
+    </style>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+
+          <h2>Редактирование рассылки</h2>
+              <div class="table-responsive">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% if user.is_active and not request.user.is_staff or user.is_superuser %}
+                    <div class="form-row" >
+                        Тема </div>
+                    <div class="form-row">{{ form.subject }}<br></div>
+                    <div class="form-row">
+                        Сообщение рассылки <br></div>
+                    <div class="form-row">
+                        {{ form.body }}<br></div>
+                    <div class="form-row">
+                    Дата отправки {{ form.send_date }}<br></div>
+                    <div class="form-row">
+                        Время отправки {{ form.send_time }}<br></div>
+                    <div class="form-row">
+                        Частота отправки {{ form.frequency }}<br></div>
+                    <div class="form-row">
+                        Клиенты {{ form.clients }}<br></div>
+                        {% endif %}
+                    {% if user.is_active or not request.user.is_staff or user.is_superuser %}
+                    <div class="form-row">
+                        Статус рассылки {{ form.status }}<br></div>
+                    {% endif %}
+                    <input type="submit" class="btn btn-warning" value="Создать">
+                    <a href="{%url 'main:mailing_list' %}" class="btn btn-info">Назад</a>
+                </form>
+              </div>
+          </div>
+    </main>
+
+{% endblock %}

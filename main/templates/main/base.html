@@ -1,0 +1,59 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{ title }}</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css'%}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboard.css'%}" rel="stylesheet">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Mailing Corp</a>
+      <ul class="navbar-nav ml-auto">
+      {% if user.is_authenticated  %}
+        <li class="nav-item text-nowrap"><a href="{% url 'users:profile' %}" class="text-white">Профиль</a></li>
+        <li class="nav-item text-nowrap"><a href="{% url 'users:logout' %}" class="text-white">Выйти</a></li>
+      {% else %}
+        <li class="nav-item text-nowrap"><a href="{% url 'users:login' %}" class="text-white">Войти</a></li>
+        <li class="nav-item text-nowrap"><a href="{% url 'users:register' %}" class="text-white">Регистрация</a></li>
+      {% endif %}
+      </ul>
+    </nav>
+        {% include 'main/includes/inc_main_menu.html' %}
+
+
+          {% block content %}
+          {% endblock %}
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="{% static 'js/popper.min.js'%}"></script>
+    <script src="{% static 'js/bootstrap.min.js'%}"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+
+  </body>
+</html>
