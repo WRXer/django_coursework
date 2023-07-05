@@ -31,26 +31,26 @@
                 </tr>
                 </thead>
             {% for object in object_list %}
-              <thead>
-              {% if object.mailing_owner == request.user or request.user.is_staff or request.user.is_superuser %}
-                <tr>
-                    <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{object.pk}}</a></th>
-                    <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{ object.subject }}</a></th>
-                  <th>{{ object.send_time }}</th>
-                    <th>{{ object.frequency }}</th>
-                    <th>
-                      {% if object.clients.exists %}
-                        {% for client in object.clients.all %}
-                          {{ client }}<br>
-                        {% endfor %}
-                      {% else %}
-                        No clients assigned
-                      {% endif %}
-                    </th>
-                    <th>{{ object.status }}</th>
-                </tr>
-              {% endif %}
-              </thead>
+                {% if object.mailing_owner == request.user or request.user.is_staff or request.user.is_superuser %}
+                <thead>
+                    <tr>
+                        <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{object.pk}}</a></th>
+                        <th><a href="{% url 'main:mailing_detail' pk=object.pk %}">{{ object.subject }}</a></th>
+                      <th>{{ object.send_time }}</th>
+                        <th>{{ object.frequency }}</th>
+                        <th>
+                          {% if object.clients.exists %}
+                            {% for client in object.clients.all %}
+                              {{ client }}<br>
+                            {% endfor %}
+                          {% else %}
+                            No clients assigned
+                          {% endif %}
+                        </th>
+                        <th>{{ object.status }}</th>
+                    </tr>
+                </thead>
+                {% endif %}
             {% endfor %}
         </table>
       </div>

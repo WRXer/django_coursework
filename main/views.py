@@ -144,7 +144,7 @@ class MailingCreateView(generic.CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields['clients'].queryset = Client.objects.filter(client_owner=self.request.user)
+        form.fields['clients'].queryset = Client.objects.filter(client_owner=self.request.user or self.request.user.is_superuser)
         return form
 
     def get_context_data(self, **kwargs):

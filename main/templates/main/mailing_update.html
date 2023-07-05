@@ -13,7 +13,7 @@
               <div class="table-responsive">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {% if user.is_active or not request.user.is_staff or user.is_superuser %}
+                    {% if user.is_active and not request.user.is_staff or user.is_superuser %}
                     <div class="form-row" >
                         Тема </div>
                     <div class="form-row">{{ form.subject }}<br></div>
