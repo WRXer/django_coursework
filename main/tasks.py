@@ -38,7 +38,11 @@ def check_mailings():
                 send_time = datetime.time(14, 0)
             else:
                 send_time = datetime.time(19, 0)
-            send_datetimee = tz.localize(datetime.datetime.combine(send_date, send_time))
+            #send_datetimee = datetime.combine(send_date, send_time)
+            send_datetimee = datetime.datetime(year=send_date.year,month=send_date.month,day=send_date.day,hour=send_time.hour,minute=send_time.minute,second=send_time.second, )
+            current_time = current_time.replace(tzinfo=None)
+            send_datetimee = send_datetimee.replace(tzinfo=None)
+            print(current_time)
             print(send_datetimee)
             if send_datetimee <= current_time:
                 last_attempt = MailingAttempt.objects.filter(mailing=mailing).order_by('-send_datetime').first()
