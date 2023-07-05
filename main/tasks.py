@@ -1,3 +1,5 @@
+import smtplib
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -12,32 +14,17 @@ import schedule
 
 last_sent_time = None
 
-def send_mailing_task(mailing):
-    """
-    Логика рассылки сообщений
-    """
-    #mailings = Mailing.objects.filter(status='running')
-
-    #for mailing_item in mailings:
-    #    subject = mailing_item.subject
-    #    message = mailing_item.body
-    #    recipient_list = ['wrxwerrr@yandex.ru']
-    #    send_mail(subject, message, settings.EMAIL_HOST_USER,  recipient_list=recipient_list)
-    subject = mailing.subject
-    message = mailing.body
-    recipient_list = ['wrxwerrr@yandex.ru']
-    send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list=recipient_list)
-    print("Рассылка отправлена")
 
 
 def start_scheduler():
     """
     Запуск самого шедьюлера
     """
+    print('ну шо Поихали')
     schedule.every(25).seconds.do(check_mailings)  # Периодически проверяем рассылки
     while True:  # Запуск цикла для непрерывного выполнения задач
         schedule.run_pending()
-        time.sleep(15)
+        time.sleep(5)
 
 def check_mailings():
     """
@@ -57,24 +44,36 @@ def check_mailings():
                 send_time = datetime.time(14, 0)
             else:
                 send_time = datetime.time(19, 0)
-            print('this')
             send_datetime = tz.localize(datetime.datetime.combine(send_date, send_time))
             print(send_datetime)
             if send_datetime <= current_time:
-                schedule_mailing(mailing)
+                send_mailing_task(mailing)
 
-def schedule_mailing(mailing):
+def send_mailing_task(mailing):
     """
-    Шедьюл отправка рассылки
+    Логика рассылки сообщений
     """
-    current_time = timezone.now()
-
-    mailing_attempt_l = MailingAttempt.objects.filter(mailing__status='running', is_active=True)
-    for mailing_attempt in mailing_attempt_l:
-        print(mailing_attempt)
-        if mailing_attempt and (current_time - mailing_attempt.send_datetime).total_seconds() >= 20:    # Проверяем, прошло ли подходящее время
-            mailing_attempt.is_active = False  # Установка is_active предыдущей активной строки в False
-            mailing_attempt.save()
-            mailing_attempt = MailingAttempt.objects.create(mailing=mailing_attempt.mailing,send_datetime=timezone.now(),status='success',server_response='OK', is_active=True)
-            mailing_attempt.save()
-            send_mailing_task(mailing)
+    #mailings = Mailing.objects.filter(status='running')
+    subject = mailing.subject
+    message = mailing.body
+    recipients = mailing.clients.all().values_list('email', flat=True)  # Получаем список email-адресов получателей
+    recipient_list = list(recipients)  #['wrxwerrr@yandex.ru']
+    success = True  # Флаг успешной отправки
+    bad_err = None
+    for recipient in recipient_list:
+        print(recipient)
+        try:
+            send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list=[recipient])
+        except smtplib.SMTPException as error:
+            bad_err = error
+            success = False
+    if success:
+        mailing_attempt = MailingAttempt.objects.create(mailing=mailing, send_datetime=timezone.now(),
+                                                        status='success', server_response='OK', is_active=True)
+        mailing_attempt.save()
+        print("Рассылка отправлена")
+    else:
+        mailing_attempt = MailingAttempt.objects.create(mailing=mailing, send_datetime=timezone.now(),
+                                                        status='failure', server_response=bad_err, is_active=False)
+        mailing_attempt.save()
+        print(f"Ошибка при отправке рассылки.")

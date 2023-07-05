@@ -24,15 +24,15 @@
                 </tr>
                 </thead>
             {% for object in object_list %}
-                {% if object.client_owner == request.user or request.user.is_staff or request.user.is_superuser %}
-              <thead>
-                <tr>
-                    <th><a href="{% url 'main:client_detail' pk=object.pk %}">{{object.pk}}</a></th>
-                    <th><a href="{% url 'main:client_detail' pk=object.pk %}">{{ object.full_name }}</a></th>
-                  <th>{{ object.email }}</th>
-                  <th>{{ object.comment }}</th>
-                </tr>
-              </thead>
+                {% if object.client_owner == request.user or not request.user.is_staff or request.user.is_superuser %}
+                  <thead>
+                    <tr>
+                        <th><a href="{% url 'main:client_detail' pk=object.pk %}">{{object.pk}}</a></th>
+                        <th><a href="{% url 'main:client_detail' pk=object.pk %}">{{ object.full_name }}</a></th>
+                      <th>{{ object.email }}</th>
+                      <th>{{ object.comment }}</th>
+                    </tr>
+                  </thead>
                 {% endif %}
             {% endfor %}
         </table>

@@ -47,8 +47,8 @@ class ClientListView(LoginRequiredMixin, generic.ListView):
         'title': 'Все клиенты'
     }
 
-    def get_queryset(self):
-        return super().get_queryset().filter(client_owner=self.request.user)
+    #def get_queryset(self):
+        #return super().get_queryset().filter(client_owner=self.request.user)
 
 class ClientCreateView(generic.CreateView):
     model = Client
@@ -136,9 +136,9 @@ class MailingCreateView(generic.CreateView):
             formset.instance = self.object
             formset.save()
         # Создание первой MailingAttempt
-        send_datetime = timezone.now()
-        mailing_attempt = MailingAttempt.objects.create(mailing=self.object, send_datetime=send_datetime, status='failure',server_response='create')
-        mailing_attempt.save()
+        #send_datetime = timezone.now()
+        #mailing_attempt = MailingAttempt.objects.create(mailing=self.object, send_datetime=send_datetime, status='failure',server_response='create')
+        #mailing_attempt.save()
         return super().form_valid(form)
 
 
@@ -158,16 +158,6 @@ class MailingCreateView(generic.CreateView):
     #    return super().form_valid(form)
 
 
-class MailingDetailView(generic.DetailView):
-    model = Mailing
-    template_name = 'main/mailing_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['newsletter'] = Mailing.objects.first()  # Предположим, что вы выбираете только одну рассылку
-        return context
-
-
 class MailingUpdateView(generic.UpdateView):
     model = Mailing
     form_class = MailingForm
@@ -178,6 +168,29 @@ class MailingUpdateView(generic.UpdateView):
         return redirect(self.object.get_absolute_url())
 
 
+class MailingDetailView(generic.DetailView):
+    model = Mailing
+    template_name = 'main/mailing_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['newsletter'] = Mailing.objects.first()  # Предположим, что вы выбираете только одну рассылку
+        return context
+
+
+
 class MailingDeleteView(generic.DeleteView):
     model = Mailing  # Модель
     success_url = reverse_lazy('main:mailing_list')  # Адрес для перенаправления после успешного удаления
+
+
+class MailingAttemptListView(generic.ListView):
+    model = MailingAttempt
+    template_name = 'main/mailingattempt_list.html'
+    extra_context = {
+        'title': 'Состояние рассылок'
+    }
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.order_by('-send_datetime')
