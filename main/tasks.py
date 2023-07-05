@@ -1,18 +1,13 @@
 import smtplib
-
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 import pytz
 from main.models import Mailing, MailingAttempt
 import datetime
-import threading
 import time
 import schedule
-
-
-last_sent_time = None
+from datetime import timedelta
 
 
 
@@ -36,7 +31,6 @@ def check_mailings():
 
     for mailing in mailings:
         if mailing.status == 'running':
-            #schedule_mailing(mailing)
             send_date = mailing.send_date
             if mailing.send_time in ['Утро', 'morning']:
                 send_time = datetime.time(9, 0)
@@ -44,10 +38,28 @@ def check_mailings():
                 send_time = datetime.time(14, 0)
             else:
                 send_time = datetime.time(19, 0)
-            send_datetime = tz.localize(datetime.datetime.combine(send_date, send_time))
-            print(send_datetime)
-            if send_datetime <= current_time:
-                send_mailing_task(mailing)
+            send_datetimee = tz.localize(datetime.datetime.combine(send_date, send_time))
+            print(send_datetimee)
+            if send_datetimee <= current_time:
+                last_attempt = MailingAttempt.objects.filter(mailing=mailing).order_by('-send_datetime').first()
+                last_attempt_date = last_attempt.send_datetime if last_attempt else None
+                frequency = mailing.frequency
+                if should_reschedule_mailing(last_attempt_date, frequency,current_time):
+                    print('check heck')
+                    send_mailing_task(mailing)
+
+def should_reschedule_mailing(last_attempt_date, frequency,current_time):
+    if last_attempt_date is None:
+        return True
+    elif frequency == 'daily':
+        return last_attempt_date.date() < current_time.date()
+
+    elif frequency == 'weekly':
+        return last_attempt_date.date() + timedelta(days=7) <= current_time.date()
+
+    if frequency == 'monthly':
+        return last_attempt_date.date() + timedelta(days=30) <= current_time.date()
+    return False  # Некорректная периодичность
 
 def send_mailing_task(mailing):
     """
