@@ -1,21 +1,16 @@
-import datetime
 import threading
-import time
 from random import sample
-
 import schedule
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import generic
-
 from blog.models import BlogPost
 from .forms import MailingForm, ClientForm, MailingAttemptForm
 from main.models import Mailing, Client, MailingAttempt
-from .tasks import send_mailing_task, start_scheduler
+from .tasks import start_scheduler
 
 
 # Create your views here.
@@ -23,8 +18,6 @@ def index(request):
     total_mailings = Mailing.objects.count()
     active_mailings = Mailing.objects.filter(status='running').count()
     unique_clients = Client.objects.distinct().count()
-
-
     all_posts = BlogPost.objects.filter(is_active=True)    # Получить все блог-посты
     if len(all_posts) >= 3:
         random_posts = sample(list(all_posts), 3)   # Получить 3 случайных блог-поста
@@ -37,7 +30,6 @@ def index(request):
         'active_mailings': active_mailings,
         'unique_clients': unique_clients,
         'posts': random_posts}    # Передать блог-посты в контекст шаблона
-
     return render(request, 'main/index.html', context)
 
 
@@ -68,7 +60,6 @@ class ClientUpdateView(generic.UpdateView):
     model = Client
     form_class = ClientForm
     template_name = 'main/client_update.html'
-
     # success_url = 'main/blog_detail/<int:pk>/'  # Перенаправление после успешного создания статьи
 
     def form_valid(self, form):
@@ -96,7 +87,6 @@ class MailingListView(LoginRequiredMixin, generic.ListView):
     extra_context = {
         'title': 'Все рассылки'
     }
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -141,7 +131,6 @@ class MailingCreateView(generic.CreateView):
         #mailing_attempt.save()
         return super().form_valid(form)
 
-
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['clients'].queryset = Client.objects.filter(client_owner=self.request.user or self.request.user.is_superuser)
@@ -176,7 +165,6 @@ class MailingDetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['newsletter'] = Mailing.objects.first()  # Предположим, что вы выбираете только одну рассылку
         return context
-
 
 
 class MailingDeleteView(generic.DeleteView):

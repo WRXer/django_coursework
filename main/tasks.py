@@ -25,7 +25,6 @@ def check_mailings():
     """
     Проверка статуса рассылки
     """
-    tz = pytz.timezone('Europe/Moscow')
     mailings = Mailing.objects.all()  # Получаем все рассылки
     current_time = timezone.now()
 
@@ -42,8 +41,6 @@ def check_mailings():
             send_datetimee = datetime.datetime(year=send_date.year,month=send_date.month,day=send_date.day,hour=send_time.hour,minute=send_time.minute,second=send_time.second, )
             current_time = current_time.replace(tzinfo=None)
             send_datetimee = send_datetimee.replace(tzinfo=None)
-            print(current_time)
-            print(send_datetimee)
             if send_datetimee <= current_time:
                 last_attempt = MailingAttempt.objects.filter(mailing=mailing).order_by('-send_datetime').first()
                 last_attempt_date = last_attempt.send_datetime if last_attempt else None
@@ -53,14 +50,15 @@ def check_mailings():
                     send_mailing_task(mailing)
 
 def should_reschedule_mailing(last_attempt_date, frequency,current_time):
+    """
+    Проверка рассылки на условие интервала времени
+    """
     if last_attempt_date is None:
         return True
     elif frequency == 'daily':
         return last_attempt_date.date() < current_time.date()
-
     elif frequency == 'weekly':
         return last_attempt_date.date() + timedelta(days=7) <= current_time.date()
-
     if frequency == 'monthly':
         return last_attempt_date.date() + timedelta(days=30) <= current_time.date()
     return False  # Некорректная периодичность
@@ -83,7 +81,7 @@ def send_mailing_task(mailing):
         except smtplib.SMTPException as error:
             bad_err = error
             success = False
-    if success:
+    if success:    #Если отправка верна, то
         mailing_attempt = MailingAttempt.objects.create(mailing=mailing, send_datetime=timezone.now(),
                                                         status='success', server_response='OK', is_active=True)
         mailing_attempt.save()

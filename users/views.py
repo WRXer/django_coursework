@@ -15,12 +15,10 @@ import config.settings
 
 # Create your views here.
 
-
 class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
     template_name = 'users/register.html'
-
     # success_url = reverse_lazy('users:verify_email_sent')
 
     def form_valid(self, form):

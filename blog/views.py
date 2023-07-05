@@ -22,8 +22,6 @@ class BlogDetailView(generic.DetailView):
     form_class = BlogForm
     template_name = 'blog/blog_detail.html'
 
-
-
     def get(self, request, *args, **kwargs):
         """
         Увеличиваем счетчик просмотров

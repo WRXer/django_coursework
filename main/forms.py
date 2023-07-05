@@ -4,7 +4,6 @@ from .models import Mailing, Client, MailingAttempt
 
 class MailingForm(forms.ModelForm):
     clients = forms.ModelMultipleChoiceField(queryset=Client.objects.all(), widget=forms.CheckboxSelectMultiple)
-
     class Meta:
         model = Mailing
         fields = ['subject', 'body','send_date', 'send_time', 'frequency', 'clients', 'status']
