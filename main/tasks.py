@@ -27,7 +27,6 @@ def check_mailings():
     """
     mailings = Mailing.objects.all()  # Получаем все рассылки
     current_time = timezone.now()
-
     for mailing in mailings:
         if mailing.status == 'running':
             send_date = mailing.send_date
@@ -56,11 +55,14 @@ def should_reschedule_mailing(last_attempt_date, send_time, frequency,current_ti
     if send_date is None:
         return True
     elif frequency == 'daily':
-        return send_date.date() < current_time.date()
+        if send_date.date() < current_time.date():
+            return send_date.time().strftime('%H:%M') == current_time.time().strftime('%H:%M')
     elif frequency == 'weekly':
-        return send_date.date() + timedelta(days=7) <= current_time.date()
+        if send_date.date() + timedelta(days=7) <= current_time.date():
+            return send_date.time().strftime('%H:%M') == current_time.time().strftime('%H:%M')
     if frequency == 'monthly':
-        return send_date.date() + timedelta(days=30) <= current_time.date()
+        if send_date.date() + timedelta(days=30) <= current_time.date():
+            return send_date.time().strftime('%H:%M') == current_time.time().strftime('%H:%M')
     return False  # Некорректная периодичность
 
 def send_mailing_task(mailing):
