@@ -45,22 +45,22 @@ def check_mailings():
                 last_attempt = MailingAttempt.objects.filter(mailing=mailing).order_by('-send_datetime').first()
                 last_attempt_date = last_attempt.send_datetime if last_attempt else None
                 frequency = mailing.frequency
-                if should_reschedule_mailing(last_attempt_date, frequency,current_time):
-                    print('check heck')
+                if should_reschedule_mailing(last_attempt_date, send_time, frequency,current_time):
                     send_mailing_task(mailing)
 
-def should_reschedule_mailing(last_attempt_date, frequency,current_time):
+def should_reschedule_mailing(last_attempt_date, send_time, frequency,current_time):
     """
     Проверка рассылки на условие интервала времени
     """
-    if last_attempt_date is None:
+    send_date = datetime.datetime(year=last_attempt_date.year, month=last_attempt_date.month, day=last_attempt_date.day, hour=send_time.hour, minute=send_time.minute,)
+    if send_date is None:
         return True
     elif frequency == 'daily':
-        return last_attempt_date.date() < current_time.date()
+        return send_date.date() < current_time.date()
     elif frequency == 'weekly':
-        return last_attempt_date.date() + timedelta(days=7) <= current_time.date()
+        return send_date.date() + timedelta(days=7) <= current_time.date()
     if frequency == 'monthly':
-        return last_attempt_date.date() + timedelta(days=30) <= current_time.date()
+        return send_date.date() + timedelta(days=30) <= current_time.date()
     return False  # Некорректная периодичность
 
 def send_mailing_task(mailing):
