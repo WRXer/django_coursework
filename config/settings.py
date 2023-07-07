@@ -12,10 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -83,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dj_db', # Название БД
         'USER': 'postgres', # Пользователь для подключения
-        'PASSWORD': '777Nokia13', # Пароль для этого пользователя
+        'PASSWORD': os.getenv('DB_PASSWORD'), # Пароль для этого пользователя
     }
 }
 
@@ -140,8 +142,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = "king_311@mail.ru"
-EMAIL_HOST_PASSWORD = 'hTFRgudE2tEBmKEgwjFS'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
@@ -160,7 +162,7 @@ LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-CACHE_ENABLED = os.getenv('CACHE_ENABLED') == 'True'
+CACHE_ENABLED= os.getenv('CACHE_ENABLED') == 'True'
 
 if CACHE_ENABLED:
     CACHES = {
